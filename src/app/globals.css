@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Palette de la maquette UI : canvas #FCFBFB, petal #E8DADF, mauve #CFB7C4, plum #7A5A6C, ink #222222.
+ * Contrastes (WCAG) :
+ *  - ink-soft #4A3F45 sur canvas : ≈ 10:1 (texte courant)
+ *  - plum #7A5A6C sur canvas : ≈ 6:1 ; blanc sur plum : ≈ 6:1 (boutons, liens, petits accents)
+ *  - ink-soft sur mauve #CFB7C4 : ≈ 5:1 (texte sur hero et bandeaux mauves)
+ *  - mauve et petal : fonds et filets uniquement, jamais pour du texte sur fond clair
+ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas font-sans text-ink-soft antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-serif font-normal text-ink;
+    text-wrap: balance;
+  }
+  ::selection {
+    @apply bg-plum text-white;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-plum ring-offset-2 ring-offset-canvas;
+  }
+  summary {
+    @apply cursor-pointer list-none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------- Apparition au défilement (composant Reveal) ----------
+ * Le masquage initial n'a lieu que si JavaScript est actif (classe « js » posée sur <html>). */
+html.js .reveal {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.65, 0.25, 1),
+    transform 0.9s cubic-bezier(0.2, 0.65, 0.25, 1);
+}
+html.js .reveal[data-shown='true'] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .motion-decor {
+    display: none;
+  }
+}
+
+@layer components {
+  /* Grain très léger (visuels de produits). */
+  .paper {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .3 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Mise en page ---------- */
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .section {
+    @apply py-16 md:py-20;
+  }
+
+  /* ---------- Typographie ---------- */
+  .eyebrow {
+    @apply font-sans text-xs font-medium uppercase tracking-[0.24em];
+  }
+  .display {
+    @apply font-serif text-5xl leading-[1.05] md:text-6xl;
+  }
+  .heading {
+    @apply font-serif text-3xl leading-tight md:text-4xl;
+  }
+  .link {
+    @apply underline decoration-plum/40 underline-offset-4 transition hover:decoration-plum;
+  }
+
+  /* ---------- Bandes sombres (pied de page) : texte clair ---------- */
+  .on-dark {
+    @apply text-canvas;
+  }
+  .on-dark :is(h1, h2, h3) {
+    @apply text-canvas;
+  }
+  .on-dark .card {
+    @apply bg-white/5 shadow-none ring-white/20;
+  }
+  .on-dark .link {
+    @apply decoration-canvas/40 hover:decoration-canvas;
+  }
+
+  /* ---------- Boutons ---------- */
+  .btn {
+    @apply relative isolate inline-flex min-h-[3rem] items-center justify-center gap-2 overflow-hidden rounded-full px-7 text-sm font-medium tracking-wide transition duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  /* Reflet lumineux qui traverse le bouton au survol. */
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.25) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.8s ease;
+  }
+  .btn:hover::before {
+    transform: translateX(120%);
+  }
+  .btn-primary {
+    @apply btn bg-plum text-white shadow-[0_10px_24px_-14px_rgb(94_67_83/0.8)] hover:bg-plum-deep;
+  }
+  .btn-secondary {
+    @apply btn border border-plum/50 text-plum hover:border-plum hover:bg-plum hover:text-white;
+  }
+  .btn-light {
+    @apply btn bg-white text-plum hover:bg-petal-light;
+  }
+  .btn-outline-light {
+    @apply btn border border-white/70 text-white hover:bg-white hover:text-plum;
+  }
+  .btn-sm {
+    @apply min-h-[2.25rem] px-4 text-xs;
+  }
+  /* Flèche ronde accolée aux boutons, comme sur la maquette. */
+  .btn-arrow {
+    @apply -mr-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-plum transition duration-300 group-hover:translate-x-0.5;
+  }
+  .icon-btn {
+    @apply relative inline-flex h-11 w-11 items-center justify-center rounded-full text-ink transition hover:bg-petal hover:text-plum;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .card {
+    @apply rounded-2xl bg-white p-5 ring-1 ring-petal md:p-6;
+  }
+
+  /* Dégradé mauve poudré (hero, bandeaux), avec un reflet qui glisse lentement. */
+  .blush {
+    background-color: theme('colors.mauve.DEFAULT');
+    background-image:
+      linear-gradient(115deg, transparent 38%, rgb(255 255 255 / 0.28) 47%, rgb(255 255 255 / 0.08) 52%, transparent 60%),
+      radial-gradient(ellipse 70% 80% at 85% 30%, rgb(255 255 255 / 0.45), transparent 70%),
+      linear-gradient(120deg, theme('colors.mauve.DEFAULT'), theme('colors.mauve.light') 60%, theme('colors.petal.DEFAULT'));
+    background-size: 250% 100%, auto, auto;
+    background-position: 100% 0, 0 0, 0 0;
+    animation: blush-sheen 14s ease-in-out infinite alternate;
+  }
+  @keyframes blush-sheen {
+    from { background-position: 100% 0, 0 0, 0 0; }
+    to { background-position: 0% 0, 0 0, 0 0; }
+  }
+  /* Ancien nom conservé pour les en-têtes de pages : version claire. */
+  .satin {
+    background-color: theme('colors.petal.light');
+    background-image: radial-gradient(ellipse 70% 90% at 90% 0%, theme('colors.mauve.light'), transparent 70%);
+  }
+
+  /* Filet fin */
+  .fine-rule {
+    @apply h-px bg-gradient-to-r from-transparent via-mauve to-transparent;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.15em];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-petal bg-white px-4 py-2 text-sm text-ink-soft transition hover:border-plum;
+  }
+  .chip-active {
+    @apply border-plum bg-plum text-white hover:bg-plum-deep;
+  }
+  .step-dot {
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-plum font-sans text-sm text-white;
+  }
+
+  /* ---------- Formulaires ---------- */
+  .field {
+    @apply w-full rounded-xl border border-petal bg-white px-4 py-3 text-ink-soft transition placeholder:text-plum/60 hover:border-plum/50 focus:border-plum;
+  }
+  select.field {
+    @apply appearance-none pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%237A5A6C' stroke-width='1.5'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.9rem center;
+    background-repeat: no-repeat;
+    background-size: 1.1rem;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-plum;
+  }
+  .hint {
+    @apply mt-1.5 text-xs text-plum;
+  }
+  /* Tuile de choix (radio) : bordure mauve foncé lorsque l'option est cochée. */
+  .option-tile {
+    @apply flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-petal bg-white px-4 py-3.5 transition hover:border-plum/60 has-[:checked]:border-plum has-[:checked]:bg-petal-light has-[:checked]:ring-1 has-[:checked]:ring-plum has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-55 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-plum;
+  }
+
+  /* ---------- Accordéons ---------- */
+  .accordion {
+    @apply border-b border-petal;
+  }
+  .accordion > summary {
+    @apply flex items-center justify-between gap-4 py-4 font-serif text-xl text-ink;
+  }
+  .accordion > summary::after {
+    content: '+';
+    @apply font-sans text-xl font-light text-plum transition;
+  }
+  .accordion[open] > summary::after {
+    transform: rotate(45deg);
+  }
+
+  /* ---------- Contenu éditorial (pages d'information) ---------- */
+  .prose-eden {
+    @apply space-y-4 leading-relaxed;
+  }
+  .prose-eden :is(h2) {
+    @apply pt-6 font-serif text-2xl;
+  }
+  .prose-eden :is(h3) {
+    @apply pt-2 font-serif text-xl;
+  }
+  .prose-eden ul {
+    @apply list-disc space-y-2 pl-5 marker:text-mauve-deep;
+  }
+  .prose-eden ol {
+    @apply list-decimal space-y-2 pl-5 marker:text-plum;
+  }
+  .prose-eden a {
+    @apply link;
+  }
+}

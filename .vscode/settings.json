@@ -1,0 +1,21 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.next": true,
+    "**/coverage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "tailwindCSS.experimental.classRegex": [
+    ["className\\s*=\\s*[\"'`]([^\"'`]*)[\"'`]"]
+  ],
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
+}
